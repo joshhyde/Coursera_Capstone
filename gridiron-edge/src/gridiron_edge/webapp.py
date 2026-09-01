@@ -74,6 +74,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "pick_count": len(picks),
                 "picks": [_pick_to_dict(p) for p in picks[:20]],
             }
+        except (ApiBudgetExceeded, RateLimitExceeded) as exc:
+            logger.warning("sync failed: %s", exc)
+            return {"ok": False, "error": str(exc)}
         except Exception as exc:
             logger.exception("sync failed")
             return {"ok": False, "error": str(exc)}

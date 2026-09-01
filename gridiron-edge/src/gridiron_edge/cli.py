@@ -6,7 +6,7 @@ import sys
 
 import uvicorn
 
-from gridiron_edge.api_client import OddsPapiClient
+from gridiron_edge.api_client import ApiBudgetExceeded, OddsPapiClient, RateLimitExceeded
 from gridiron_edge.config import get_settings
 from gridiron_edge.storage import Storage
 from gridiron_edge.sync import SyncService
@@ -26,6 +26,14 @@ def cmd_sync() -> int:
         print(f"Generated {len(picks)} +EV picks")
         for p in picks[:10]:
             print(f"  [{p.sport.upper()}] {p.selection} @ {p.hard_rock_line.american} ({p.edge_pct}% edge)")
+        if not picks:
+            print("No +EV picks right now (Hard Rock lines may be worse than Pinnacle).")
+        return 0
+    except RateLimitExceeded as exc:
+        print(f"Sync skipped: {exc}")
+        return 0
+    except ApiBudgetExceeded as exc:
+        print(f"Sync skipped: {exc}")
         return 0
     finally:
         client.close()

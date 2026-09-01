@@ -12,10 +12,15 @@ from gridiron_edge.storage import Storage
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://api.oddspapi.io/v4"
-ENDPOINT_COOLDOWN_SEC = 1.0
+ENDPOINT_COOLDOWN_SEC = 1.5
+MAX_RETRIES = 4
 
 
 class ApiBudgetExceeded(Exception):
+    pass
+
+
+class RateLimitExceeded(Exception):
     pass
 
 
@@ -31,6 +36,21 @@ class OddsPapiClient:
     def _can_call_api(self) -> bool:
         return self.storage.api_calls_today() < self.settings.daily_api_budget
 
+    def _retry_after_seconds(self, resp: httpx.Response) -> float:
+        try:
+            body = resp.json()
+            error = body.get("error", body)
+            if "retryMs" in error:
+                return float(error["retryMs"]) / 1000.0
+            if "retryAfterSec" in error:
+                return float(error["retryAfterSec"])
+            retry_hdr = resp.headers.get("Retry-After")
+            if retry_hdr:
+                return float(retry_hdr)
+        except (ValueError, TypeError, AttributeError):
+            pass
+        return 2.0
+
     def _request(self, path: str, params: dict[str, Any] | None = None, *, use_cache: bool = True) -> Any:
         params = dict(params or {})
         params["apiKey"] = self.settings.oddspapi_api_key
@@ -39,23 +59,46 @@ class OddsPapiClient:
         if use_cache:
             cached = self.storage.get_cache(cache_key)
             if cached is not None:
-                logger.debug("cache hit: %s", path)
+                logger.info("cache hit: %s", path)
                 return cached
 
         if not self._can_call_api():
+            stale = self.storage.get_cache(cache_key, allow_stale=True)
+            if stale is not None:
+                logger.warning("daily budget exhausted — using stale cache for %s", path)
+                return stale
             raise ApiBudgetExceeded(
                 f"Daily API budget ({self.settings.daily_api_budget}) exhausted. "
-                "Using cached data only until tomorrow."
+                "Try again tomorrow or use cached data."
             )
 
         url = f"{BASE_URL}{path}"
-        resp = self._client.get(url, params=params)
-        self.storage.log_api_call(path, resp.status_code)
-        if resp.status_code == 429:
-            retry = float(resp.json().get("error", {}).get("retryMs", 1000)) / 1000.0
-            time.sleep(retry + 0.1)
+        resp: httpx.Response | None = None
+        for attempt in range(MAX_RETRIES):
             resp = self._client.get(url, params=params)
             self.storage.log_api_call(path, resp.status_code)
+            if resp.status_code != 429:
+                break
+            wait = self._retry_after_seconds(resp) + 0.25
+            logger.warning(
+                "rate limited on %s (attempt %s/%s), waiting %.1fs",
+                path,
+                attempt + 1,
+                MAX_RETRIES,
+                wait,
+            )
+            time.sleep(wait)
+
+        assert resp is not None
+        if resp.status_code == 429:
+            stale = self.storage.get_cache(cache_key, allow_stale=True) if use_cache else None
+            if stale is not None:
+                logger.warning("rate limited — using stale cache for %s", path)
+                return stale
+            raise RateLimitExceeded(
+                "OddsPapi rate limit hit. Wait a minute and try Sync again."
+            )
+
         resp.raise_for_status()
         data = resp.json()
         time.sleep(ENDPOINT_COOLDOWN_SEC)
@@ -80,7 +123,7 @@ class OddsPapiClient:
                 "tournamentIds": ",".join(str(t) for t in tournament_ids),
                 "oddsFormat": "american",
             },
-            use_cache=False,
+            use_cache=True,
         )
 
     def get_odds_by_tournaments_both_books(
@@ -124,5 +167,5 @@ class OddsPapiClient:
                 "fixtureId": fixture_id,
                 "bookmakers": f"{self.settings.target_book},{self.settings.sharp_book}",
             },
-            use_cache=False,
+            use_cache=True,
         )

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from gridiron_edge.api_client import ApiBudgetExceeded, OddsPapiClient
+from gridiron_edge.api_client import ApiBudgetExceeded, OddsPapiClient, RateLimitExceeded
 from gridiron_edge.config import Settings
 from gridiron_edge.engine import generate_picks
 from gridiron_edge.models import GameOdds, Pick
@@ -34,8 +34,8 @@ class SyncService:
 
         try:
             fixtures = self.client.get_odds_by_tournaments_both_books(tournament_ids)
-        except ApiBudgetExceeded:
-            logger.warning("API budget exceeded — loading fixtures from cache/db")
+        except (ApiBudgetExceeded, RateLimitExceeded) as exc:
+            logger.warning("%s — loading fixtures from cache/db", exc)
             fixtures = self._fixtures_from_db()
 
         games: list[GameOdds] = []

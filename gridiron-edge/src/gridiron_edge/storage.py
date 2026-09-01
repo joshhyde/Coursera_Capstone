@@ -103,13 +103,19 @@ class Storage:
             ).fetchone()
             return int(row["c"])
 
-    def get_cache(self, key: str) -> dict[str, Any] | None:
+    def get_cache(self, key: str, *, allow_stale: bool = False) -> dict[str, Any] | None:
         now = datetime.now(timezone.utc).isoformat()
         with self.connect() as conn:
-            row = conn.execute(
-                "SELECT payload FROM odds_cache WHERE cache_key = ? AND expires_at > ?",
-                (key, now),
-            ).fetchone()
+            if allow_stale:
+                row = conn.execute(
+                    "SELECT payload FROM odds_cache WHERE cache_key = ?",
+                    (key,),
+                ).fetchone()
+            else:
+                row = conn.execute(
+                    "SELECT payload FROM odds_cache WHERE cache_key = ? AND expires_at > ?",
+                    (key, now),
+                ).fetchone()
             if not row:
                 return None
             return json.loads(row["payload"])
