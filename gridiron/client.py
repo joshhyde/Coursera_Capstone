@@ -16,6 +16,8 @@ from gridiron.constants import (
     USER_AGENT,
 )
 
+MAX_RETRIES = 5
+
 Opener = Callable[[urllib.request.Request, float], Any]
 
 
@@ -75,18 +77,39 @@ class OddsClient:
         )
         url = f"{HOST}/{path}?{query}"
         request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-        try:
-            with self._urlopen(request, timeout=self._timeout) as response:
-                raw = response.read()
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", "replace") if exc.fp else ""
-            raise OddsPapiError(f"OddsPapi {exc.code} on /{path}: {detail[:300]}") from exc
-        except urllib.error.URLError as exc:
-            raise OddsPapiError(f"OddsPapi request failed on /{path}: {exc.reason}") from exc
-        try:
-            body = json.loads(raw.decode("utf-8"))
-        except json.JSONDecodeError as exc:
-            raise OddsPapiError(f"OddsPapi returned non-JSON on /{path}") from exc
-        if isinstance(body, dict) and body.get("error"):
-            raise OddsPapiError(f"OddsPapi error on /{path}: {body}")
-        return body
+        last_error: OddsPapiError | None = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                with self._urlopen(request, timeout=self._timeout) as response:
+                    raw = response.read()
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", "replace") if exc.fp else ""
+                last_error = OddsPapiError(f"OddsPapi {exc.code} on /{path}: {detail[:300]}")
+                if exc.code == 429 and attempt < MAX_RETRIES - 1:
+                    self._sleep(_retry_wait_sec(detail))
+                    continue
+                raise last_error from exc
+            except urllib.error.URLError as exc:
+                raise OddsPapiError(f"OddsPapi request failed on /{path}: {exc.reason}") from exc
+            try:
+                body = json.loads(raw.decode("utf-8"))
+            except json.JSONDecodeError as exc:
+                raise OddsPapiError(f"OddsPapi returned non-JSON on /{path}") from exc
+            if isinstance(body, dict) and body.get("error"):
+                raise OddsPapiError(f"OddsPapi error on /{path}: {body}")
+            return body
+        raise last_error or OddsPapiError(f"OddsPapi request failed on /{path}")
+
+
+def _retry_wait_sec(detail: str) -> float:
+    try:
+        payload = json.loads(detail)
+    except json.JSONDecodeError:
+        return BOOK_GAP_SEC
+    error = payload.get("error") if isinstance(payload, dict) else None
+    if not isinstance(error, dict):
+        return BOOK_GAP_SEC
+    ms = error.get("retryMs")
+    if isinstance(ms, (int, float)) and ms >= 0:
+        return max(BOOK_GAP_SEC, ms / 1000.0)
+    return BOOK_GAP_SEC

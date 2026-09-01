@@ -1,8 +1,9 @@
-import json
+import io
+from urllib.error import HTTPError
 from urllib.request import Request
 
 from gridiron.client import OddsClient
-from gridiron.constants import HOST, USER_AGENT
+from gridiron.constants import BOOK_GAP_SEC, HOST, USER_AGENT
 
 
 class _Resp:
@@ -69,3 +70,20 @@ def test_ncaaf_uses_regular_season_tournament():
     client.fetch_league_odds("ncaaf")
     assert "tournamentIds=27653" in calls[0]
     assert "sportId=" not in calls[0]
+
+
+def test_retries_429_then_succeeds():
+    calls = {"n": 0}
+    sleeps: list[float] = []
+
+    def fake_open(request: Request, timeout=None):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            body = b'{"error":{"code":"RATE_LIMITED","retryMs":14}}'
+            raise HTTPError(request.full_url, 429, "Too Many Requests", None, io.BytesIO(body))
+        return _Resp(b"[]")
+
+    client = OddsClient("k", urlopen=fake_open, sleep=sleeps.append)
+    assert client.fetch_book_odds(31, "hardrockbet") == []
+    assert calls["n"] == 2
+    assert sleeps == [BOOK_GAP_SEC]
