@@ -1,0 +1,234 @@
+[
+  {
+    "fixtureId": "id1400003171515752",
+    "participant1Id": 1,
+    "participant2Id": 2,
+    "sportId": 14,
+    "tournamentId": 31,
+    "statusId": 0,
+    "hasOdds": true,
+    "startTime": "2026-09-10T20:20:00.000Z",
+    "participant1Name": "New England Patriots",
+    "participant2Name": "Seattle Seahawks",
+    "bookmakerOdds": {
+      "circasports": {
+        "bookmakerIsActive": true,
+        "suspended": false,
+        "markets": {
+          "141": {
+            "bookmakerMarketId": "x",
+            "marketActive": true,
+            "outcomes": {
+              "141": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.95,
+                    "priceAmerican": "-105",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              },
+              "142": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.95,
+                    "priceAmerican": "-105",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              }
+            }
+          },
+          "14272": {
+            "bookmakerMarketId": "x",
+            "marketActive": true,
+            "outcomes": {
+              "14272": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              },
+              "14273": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              }
+            }
+          },
+          "1464": {
+            "bookmakerMarketId": "x",
+            "marketActive": true,
+            "outcomes": {
+              "1464": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              },
+              "1465": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "fixtureId": "id1400003171515753",
+    "participant1Id": 1,
+    "participant2Id": 2,
+    "sportId": 14,
+    "tournamentId": 31,
+    "statusId": 0,
+    "hasOdds": true,
+    "startTime": "2026-09-11T00:15:00.000Z",
+    "participant1Name": "Kansas City Chiefs",
+    "participant2Name": "Baltimore Ravens",
+    "bookmakerOdds": {
+      "circasports": {
+        "bookmakerIsActive": true,
+        "suspended": false,
+        "markets": {
+          "141": {
+            "bookmakerMarketId": "x",
+            "marketActive": true,
+            "outcomes": {
+              "141": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              },
+              "142": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              }
+            }
+          },
+          "14272": {
+            "bookmakerMarketId": "x",
+            "marketActive": true,
+            "outcomes": {
+              "14272": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              },
+              "14273": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              }
+            }
+          },
+          "1464": {
+            "bookmakerMarketId": "x",
+            "marketActive": true,
+            "outcomes": {
+              "1464": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              },
+              "1465": {
+                "players": {
+                  "0": {
+                    "active": true,
+                    "betslip": null,
+                    "playerName": null,
+                    "price": 1.91,
+                    "priceAmerican": "-110",
+                    "mainLine": true,
+                    "exchangeMeta": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+]

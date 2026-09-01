@@ -1,0 +1,106 @@
+[
+  {
+    "marketId": 141,
+    "sportId": 14,
+    "playerProp": false,
+    "handicap": 0,
+    "period": "result",
+    "marketType": "moneyline",
+    "marketName": "Winner (incl. overtime)",
+    "outcomes": [
+      {"outcomeId": 141, "outcomeName": "1"},
+      {"outcomeId": 142, "outcomeName": "2"}
+    ]
+  },
+  {
+    "marketId": 14272,
+    "sportId": 14,
+    "playerProp": false,
+    "handicap": -3.5,
+    "period": "result",
+    "marketType": "spreads",
+    "marketName": "Handicap (incl. overtime)",
+    "outcomes": [
+      {"outcomeId": 14272, "outcomeName": "1"},
+      {"outcomeId": 14273, "outcomeName": "2"}
+    ]
+  },
+  {
+    "marketId": 14270,
+    "sportId": 14,
+    "playerProp": false,
+    "handicap": -4,
+    "period": "result",
+    "marketType": "spreads",
+    "marketName": "Handicap (incl. overtime)",
+    "outcomes": [
+      {"outcomeId": 14270, "outcomeName": "1"},
+      {"outcomeId": 14271, "outcomeName": "2"}
+    ]
+  },
+  {
+    "marketId": 1464,
+    "sportId": 14,
+    "playerProp": false,
+    "handicap": 44.5,
+    "period": "result",
+    "marketType": "totals",
+    "marketName": "Total (incl. overtime)",
+    "outcomes": [
+      {"outcomeId": 1464, "outcomeName": "Over"},
+      {"outcomeId": 1465, "outcomeName": "Under"}
+    ]
+  },
+  {
+    "marketId": 1466,
+    "sportId": 14,
+    "playerProp": false,
+    "handicap": 45,
+    "period": "result",
+    "marketType": "totals",
+    "marketName": "Total (incl. overtime)",
+    "outcomes": [
+      {"outcomeId": 1466, "outcomeName": "Over"},
+      {"outcomeId": 1467, "outcomeName": "Under"}
+    ]
+  },
+  {
+    "marketId": 113,
+    "sportId": 11,
+    "playerProp": false,
+    "handicap": 0,
+    "period": "fulltime",
+    "marketType": "1x2",
+    "marketName": "Regular Time Result",
+    "outcomes": [
+      {"outcomeId": 113, "outcomeName": "1"},
+      {"outcomeId": 114, "outcomeName": "X"},
+      {"outcomeId": 115, "outcomeName": "2"}
+    ]
+  },
+  {
+    "marketId": 9001,
+    "sportId": 14,
+    "playerProp": false,
+    "handicap": -3.5,
+    "period": "p1",
+    "marketType": "spreads",
+    "marketName": "Handicap (1st half)",
+    "outcomes": [
+      {"outcomeId": 9001, "outcomeName": "1"},
+      {"outcomeId": 9002, "outcomeName": "2"}
+    ]
+  },
+  {
+    "marketId": 14388,
+    "sportId": 14,
+    "playerProp": true,
+    "handicap": 0,
+    "period": "result",
+    "marketType": "player-anytime-td",
+    "marketName": "Player To Score TD",
+    "outcomes": [
+      {"outcomeId": 14388, "outcomeName": "Yes"}
+    ]
+  }
+]
