@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.gridiron-edge.sync</string>
+  <string>com.gridiron-edge.serve</string>
   <key>ProgramArguments</key>
   <array>
     <string>__GRIDIRON_VENV__/bin/gridiron</string>
-    <string>sync</string>
+    <string>serve</string>
   </array>
   <key>WorkingDirectory</key>
   <string>__GRIDIRON_ROOT__</string>
@@ -16,24 +16,13 @@
     <key>PATH</key>
     <string>__GRIDIRON_VENV__/bin:/usr/local/bin:/usr/bin:/bin</string>
   </dict>
-  <key>StartCalendarInterval</key>
-  <array>
-    <dict>
-      <key>Hour</key>
-      <integer>8</integer>
-      <key>Minute</key>
-      <integer>0</integer>
-    </dict>
-    <dict>
-      <key>Hour</key>
-      <integer>16</integer>
-      <key>Minute</key>
-      <integer>0</integer>
-    </dict>
-  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
   <key>StandardOutPath</key>
-  <string>/tmp/gridiron-edge-sync.log</string>
+  <string>/tmp/gridiron-edge-serve.log</string>
   <key>StandardErrorPath</key>
-  <string>/tmp/gridiron-edge-sync.err</string>
+  <string>/tmp/gridiron-edge-serve.err</string>
 </dict>
 </plist>

@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     daily_api_budget: int = 6
     cache_ttl_hours: int = 6
 
-    host: str = "127.0.0.1"
+    host: str = "0.0.0.0"
     port: int = 8787
 
     data_dir: Path = Path.home() / ".gridiron-edge"
