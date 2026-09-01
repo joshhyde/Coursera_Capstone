@@ -1,0 +1,33 @@
+---
+description: When and how to use pstack /poteto-mode in this repo
+alwaysApply: true
+---
+
+# pstack in this repository
+
+The plugin lives at `.cursor/plugins/pstack`. Read `skills/poteto-mode/SKILL.md` in full, including the Principles index, before non-trivial work.
+
+This Cloud Agent session does not register `subagent_type: "poteto-agent"`. Use `generalPurpose` and tell the child to read that skill first.
+
+## When to use `/poteto-mode`
+
+Use it for any task that needs rigor: a new feature, a bug with a repro, a PR to merge-ready, a multi-agent program, or work that will be reviewed later.
+
+Do not use it for a one-line question or a pure status check.
+
+## Routing
+
+- New or changed behavior: Feature playbook
+- Defect: Bug fix playbook (repro first)
+- "Check on PR X" / comments / CI: Babysit playbook, not Cursor's built-in babysit
+- Standing multi-PR program: Orchestrate playbook (coordinator never writes product code)
+- One long task to a predicate: Autonomous run
+- Read-only "how does X work": Investigation / `/how`
+
+## Models
+
+Role-to-model mapping is in `.cursor/rules/pstack-models.mdc`. Only those Task slugs exist here. Do not pass pstack's default names (`grok-4.6-fast-xhigh`, `gpt-5.6-sol-max`, `claude-fable-5-thinking-max`); they are not valid in this environment.
+
+## Product work
+
+Gridiron (Hard Rock Bet / NFL / NCAAF picks) is the standing program. Coordinator chat authors briefs and drains PRs. Workers own exclusive branches under `cursor/<name>-ce57`. Never commit `ODDS_API_KEY`.
