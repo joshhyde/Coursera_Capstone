@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f1419">
   <title>Gridiron Edge</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -11,6 +14,24 @@
     <h1>Gridiron Edge</h1>
     <p class="tagline">Hard Rock Bet +EV picks for NFL &amp; CFB (Florida)</p>
   </header>
+
+  <aside class="phone-banner">
+    <strong>On your phone or iPad</strong>
+    {% if not lan_reachable %}
+    <p>This Mac is bound to localhost only. Set <code>HOST=0.0.0.0</code> in <code>.env</code> and restart, or phones cannot connect.</p>
+    {% else %}
+    <p>Same Wi‑Fi as this Mac. In Safari’s address bar type <code>http://</code> (not https). Do not use <code>localhost</code> or <code>0.0.0.0</code>.</p>
+    {% if phone_urls %}
+    <ul class="phone-urls">
+      {% for u in phone_urls %}
+      <li><code>{{ u }}</code></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>Open <code>http://&lt;this-mac-ip&gt;:{{ port }}</code> — run <code>gridiron urls</code> on the Mac to print it.</p>
+    {% endif %}
+    {% endif %}
+  </aside>
 
   <section class="stats-grid">
     <div class="stat-card">
@@ -50,6 +71,7 @@
   <section>
     <h2>Today's Picks</h2>
     {% if picks %}
+    <div class="table-wrap desktop-table">
     <table>
       <thead>
         <tr>
@@ -80,6 +102,21 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
+    <div class="pick-cards">
+      {% for p in picks %}
+      <article class="pick-card">
+        <div class="pick-card-top">
+          <span class="badge {{ p.sport }}">{{ p.sport|upper }}</span>
+          <span class="edge">{{ "%.1f"|format(p.edge_pct) }}% edge</span>
+        </div>
+        <h3>{{ p.selection }}</h3>
+        <p class="pick-meta">{{ p.market|title }} · {{ p.side|title }} · {{ p.american_odds }}</p>
+        <p class="pick-meta">${{ "%.0f"|format(p.stake_usd) }} stake · {% if p.result %}<span class="result {{ p.result }}">{{ p.result }}</span>{% else %}open{% endif %}</p>
+        {% if p.hard_rock_url %}<a class="bet-btn" href="{{ p.hard_rock_url }}" target="_blank" rel="noopener">Open Hard Rock Bet</a>{% endif %}
+      </article>
+      {% endfor %}
+    </div>
     {% else %}
     <p class="empty">No picks yet. Hit "Sync Odds" to pull Hard Rock vs Pinnacle lines.</p>
     {% endif %}

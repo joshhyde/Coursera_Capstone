@@ -12,6 +12,7 @@ from pathlib import Path
 from gridiron_edge.api_client import ApiBudgetExceeded, OddsPapiClient, RateLimitExceeded
 from gridiron_edge.backtest import backtest_result_to_dict, run_backtest
 from gridiron_edge.config import Settings, get_settings
+from gridiron_edge.lan import bind_reaches_lan, phone_urls
 from gridiron_edge.storage import Storage
 from gridiron_edge.sync import SyncService
 
@@ -50,6 +51,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "api_budget": settings.daily_api_budget,
                 "stake_usd": settings.stake_usd,
                 "min_edge_pct": settings.min_edge_pct,
+                "phone_urls": phone_urls(settings.port),
+                "port": settings.port,
+                "lan_reachable": bind_reaches_lan(settings.host),
             },
         )
 
@@ -64,6 +68,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/picks")
     def api_picks() -> list[dict[str, Any]]:
         return storage.list_picks()
+
+    @app.get("/api/urls")
+    def api_urls() -> dict[str, Any]:
+        return {
+            "mac": f"http://127.0.0.1:{settings.port}",
+            "phone": phone_urls(settings.port),
+            "bind": f"{settings.host}:{settings.port}",
+            "lan_reachable": bind_reaches_lan(settings.host),
+            "hint": (
+                "On a phone or iPad, same Wi-Fi, type http:// not https. "
+                "Do not use 0.0.0.0 or localhost — those only work on this Mac."
+            ),
+        }
 
     @app.post("/api/sync")
     def api_sync() -> dict[str, Any]:
