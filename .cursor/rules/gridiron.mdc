@@ -1,0 +1,28 @@
+---
+description: Gridiron Edge product constraints
+globs: src/**/*.py
+alwaysApply: false
+---
+
+# Gridiron Edge
+
+Python dashboard + CLI that ranks +EV Hard Rock Bet prices for NFL and NCAAF. Recommendations only. Never place a bet, scrape Hard Rock, or store the OddsPapi key.
+
+## OddsPapi v4
+
+- Host: `https://api.oddspapi.io/v4`
+- Auth: query param `apiKey` from env `ODDSPAPI_API_KEY`. Not a header.
+- Cloudflare blocks bare urllib. Send a real `User-Agent`.
+- `GET /odds-by-tournaments` requires exactly one `bookmaker` (singular). Fetch books sequentially with >=1s gap.
+
+## IDs
+
+- Sport: American Football `sportId=14`
+- NFL tournament `31`
+- NCAAF regular season tournament `27653`
+- Target book slug: `hardrockbet`
+- Sharp book: `pinnacle`
+
+## Secrets
+
+`.env` is gitignored. `.env.example` lists `ODDSPAPI_API_KEY=` with no value.
