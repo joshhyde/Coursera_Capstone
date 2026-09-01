@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gridiron Edge</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>Gridiron Edge</h1>
+    <p class="tagline">Hard Rock Bet +EV picks for NFL &amp; CFB (Florida)</p>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Win Rate</div>
+      <div class="stat-value">{{ stats.win_rate }}%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Record</div>
+      <div class="stat-value">{{ stats.wins }}-{{ stats.losses }}-{{ stats.pushes }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Profit</div>
+      <div class="stat-value {% if stats.profit_usd >= 0 %}positive{% else %}negative{% endif %}">
+        ${{ "%.2f"|format(stats.profit_usd) }}
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">API Budget Today</div>
+      <div class="stat-value">{{ api_calls_today }} / {{ api_budget }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Stake</div>
+      <div class="stat-value">${{ "%.0f"|format(stake_usd) }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Min Edge</div>
+      <div class="stat-value">{{ min_edge_pct }}%</div>
+    </div>
+  </section>
+
+  <section class="actions">
+    <button id="sync-btn" onclick="syncOdds()">Sync Odds &amp; Generate Picks</button>
+    <button id="backtest-btn" onclick="runDemoBacktest()">Run Demo Backtest</button>
+    <span id="status-msg"></span>
+  </section>
+
+  <section>
+    <h2>Today's Picks</h2>
+    {% if picks %}
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Sport</th>
+          <th>Game</th>
+          <th>Pick</th>
+          <th>Line</th>
+          <th>Edge</th>
+          <th>Stake</th>
+          <th>Result</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in picks %}
+        <tr>
+          <td>{{ p.created_at[:16] }}</td>
+          <td><span class="badge {{ p.sport }}">{{ p.sport|upper }}</span></td>
+          <td>{{ p.selection }}</td>
+          <td>{{ p.market|title }} · {{ p.side|title }}</td>
+          <td>{{ p.american_odds }}</td>
+          <td class="edge">{{ "%.1f"|format(p.edge_pct) }}%</td>
+          <td>${{ "%.0f"|format(p.stake_usd) }}</td>
+          <td>{% if p.result %}<span class="result {{ p.result }}">{{ p.result }}</span>{% else %}—{% endif %}</td>
+          <td>{% if p.hard_rock_url %}<a href="{{ p.hard_rock_url }}" target="_blank" rel="noopener">Bet ↗</a>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No picks yet. Hit "Sync Odds" to pull Hard Rock vs Pinnacle lines.</p>
+    {% endif %}
+  </section>
+
+  <section id="backtest-results" class="hidden">
+    <h2>Backtest Results</h2>
+    <pre id="backtest-output"></pre>
+  </section>
+
+  <footer>
+  <p>Strategy: compare Hard Rock Bet to Pinnacle (sharp line). Only bet when edge ≥ {{ min_edge_pct }}%.</p>
+  <p>Free OddsPapi tier: {{ api_budget }} API calls/day max. Odds cached {{ 6 }}h.</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
