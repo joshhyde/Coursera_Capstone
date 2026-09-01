@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     data_dir: Path = Path.home() / ".gridiron-edge"
 
     nfl_tournament_id: int = 31
-    ncaa_tournament_id: int = 850
+    ncaa_tournament_id: int = 27653
 
     target_book: str = "hardrockbet"
     sharp_book: str = "pinnacle"
