@@ -142,8 +142,32 @@ install_plist() {
 }
 
 mkdir -p "$LAUNCH_AGENTS"
+chmod +x "$SCRIPT_DIR/run-serve.sh" "$SCRIPT_DIR/run-sync.sh" "$SCRIPT_DIR/doctor.sh"
 install_plist "$SCRIPT_DIR/com.gridiron-edge.serve.plist" "com.gridiron-edge.serve"
 install_plist "$SCRIPT_DIR/com.gridiron-edge.sync.plist" "com.gridiron-edge.sync"
+
+sleep 2
+bold "==> Health check"
+if curl -sf -o /dev/null -m 5 "http://127.0.0.1:$PORT/"; then
+  green "Dashboard is responding on port $PORT"
+else
+  yellow "Dashboard not responding yet — check logs:"
+  echo "  tail -30 /tmp/gridiron-edge-serve.err"
+  echo "  ./scripts/doctor.sh"
+  echo ""
+  yellow "Trying manual start..."
+  "$SCRIPT_DIR/run-serve.sh" &
+  SERVE_PID=$!
+  sleep 3
+  if curl -sf -o /dev/null -m 5 "http://127.0.0.1:$PORT/"; then
+    green "Manual start works — restarting launchd service..."
+    kill "$SERVE_PID" 2>/dev/null || true
+    launchctl kickstart -k "gui/$(id -u)/com.gridiron-edge.serve" 2>/dev/null || true
+  else
+    kill "$SERVE_PID" 2>/dev/null || true
+    red "Dashboard still not responding. Run ./scripts/doctor.sh and share the output."
+  fi
+fi
 
 bold "==> Initial odds sync"
 "$VENV_DIR/bin/gridiron" sync || echo "(sync skipped — will retry on schedule)"
@@ -171,6 +195,7 @@ else
 fi
 echo ""
 bold "Services:"
+echo "  Diagnose issues: ./scripts/doctor.sh"
 echo "  Dashboard logs:  tail -f /tmp/gridiron-edge-serve.log"
 echo "  Sync logs:       tail -f /tmp/gridiron-edge-sync.log"
 echo "  Stop dashboard:  launchctl bootout gui/$(id -u)/com.gridiron-edge.serve"

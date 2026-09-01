@@ -6,8 +6,8 @@
   <string>com.gridiron-edge.serve</string>
   <key>ProgramArguments</key>
   <array>
-    <string>__GRIDIRON_VENV__/bin/gridiron</string>
-    <string>serve</string>
+    <string>/bin/bash</string>
+    <string>__GRIDIRON_ROOT__/scripts/run-serve.sh</string>
   </array>
   <key>WorkingDirectory</key>
   <string>__GRIDIRON_ROOT__</string>

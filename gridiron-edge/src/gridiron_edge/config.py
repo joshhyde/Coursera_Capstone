@@ -2,12 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+ENV_FILE = PROJECT_ROOT / ".env"
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(ENV_FILE) if ENV_FILE.exists() else None,
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -26,12 +30,16 @@ class Settings(BaseSettings):
 
     data_dir: Path = Path.home() / ".gridiron-edge"
 
-    # Tournament IDs (OddsPapi)
     nfl_tournament_id: int = 31
     ncaa_tournament_id: int = 850
 
     target_book: str = "hardrockbet"
     sharp_book: str = "pinnacle"
+
+    @field_validator("data_dir", mode="before")
+    @classmethod
+    def expand_data_dir(cls, value: str | Path) -> Path:
+        return Path(value).expanduser()
 
     @property
     def db_path(self) -> Path:
