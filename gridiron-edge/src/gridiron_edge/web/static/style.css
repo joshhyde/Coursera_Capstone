@@ -18,9 +18,25 @@ body {
   color: var(--text);
   line-height: 1.5;
   padding: 1.5rem;
+  padding-left: max(1.5rem, env(safe-area-inset-left));
+  padding-right: max(1.5rem, env(safe-area-inset-right));
   max-width: 1200px;
   margin: 0 auto;
 }
+
+.phone-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.phone-banner strong { color: var(--text); display: block; margin-bottom: 0.35rem; }
+.phone-banner code { color: var(--text); word-break: break-all; }
+.phone-urls { margin: 0.5rem 0 0; padding-left: 1.1rem; }
+.phone-urls li { margin: 0.25rem 0; }
 
 header { margin-bottom: 2rem; }
 header h1 { font-size: 1.75rem; font-weight: 700; }
@@ -58,10 +74,12 @@ button {
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
+  min-height: 44px;
   border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
   font-weight: 600;
+  touch-action: manipulation;
 }
 
 button:hover { opacity: 0.9; }
@@ -71,11 +89,18 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 h2 { font-size: 1.1rem; margin-bottom: 1rem; }
 
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
 }
+
+.pick-cards { display: none; }
 
 th, td {
   padding: 0.6rem 0.75rem;
@@ -126,3 +151,41 @@ footer {
 }
 
 footer p { margin-bottom: 0.25rem; }
+
+.pick-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.pick-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.pick-card h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
+.pick-meta { color: var(--muted); font-size: 0.875rem; }
+.bet-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.75rem;
+  min-height: 44px;
+  background: var(--accent);
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.bet-btn:hover { text-decoration: none; opacity: 0.9; }
+
+@media (max-width: 800px) {
+  body { padding: 1rem; }
+  header h1 { font-size: 1.4rem; }
+  .phone-banner { display: none; }
+  .actions { flex-direction: column; align-items: stretch; }
+  .actions button { width: 100%; }
+  .desktop-table { display: none; }
+  .pick-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+  .stat-value { font-size: 1.25rem; }
+}

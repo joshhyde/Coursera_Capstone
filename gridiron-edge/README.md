@@ -29,7 +29,9 @@ Requires **Python 3.11+**. macOS ships 3.9; the setup script auto-installs `pyth
 
 Then open:
 - **On the Mac mini:** http://127.0.0.1:8787
-- **Phone/tablet (same Wi‑Fi):** http://192.168.x.x:8787 (the script prints your IP)
+- **Phone / iPad:** the URL the script prints, e.g. `http://192.168.1.20:8787`
+
+Do **not** open `http://0.0.0.0:8787` or `http://localhost:8787` on the phone — those only work on the Mac. In Safari type `http://` yourself; iOS will try https and fail.
 
 ### Manual setup
 
@@ -46,13 +48,23 @@ gridiron serve
 
 | Where you are | How to connect |
 |---|---|
-| Same home Wi‑Fi | `http://<mac-mini-local-ip>:8787` |
-| Away from home | [Tailscale](https://tailscale.com/download) on Mac mini + phone (recommended) |
-| Public internet | Not configured by default (use Tailscale instead of port forwarding) |
+| Same home Wi‑Fi | `http://<mac-mini-local-ip>:8787` (Safari address bar, **http not https**) |
+| Away from home / cellular | [Tailscale](https://tailscale.com/download) on Mac mini + phone |
+| Public internet | Not configured (use Tailscale instead of port forwarding) |
 
-The setup script binds to `0.0.0.0` so any device on your local network can reach the dashboard. Find your Mac mini IP in **System Settings → Network**, or run `ipconfig getifaddr en0` in Terminal.
+Print the URLs a phone can actually open:
 
-**Tailscale (access anywhere):** Install on the Mac mini and your phone. Use the Mac mini's Tailscale IP (e.g. `http://100.x.x.x:8787`) from cellular or any network.
+```bash
+cd gridiron-edge
+.venv/bin/gridiron urls
+./scripts/doctor.sh
+```
+
+`0.0.0.0` means “listen on every interface on this Mac.” It is **not** a URL. `localhost` on your phone is the phone itself.
+
+Find the Mac mini IP in **System Settings → Network**, or run `ipconfig getifaddr en0`. If it still fails: same Wi‑Fi (not guest), macOS Firewall allow Python, no VPN on the phone.
+
+**Tailscale (access anywhere):** Install on the Mac mini and your phone. Use the Mac mini's Tailscale IP (e.g. `http://100.x.x.x:8787`) from cellular.
 
 ## Configuration
 
@@ -101,7 +113,8 @@ Runs sync at 8 AM and 4 PM ET.
 
 ```bash
 gridiron sync    # Fetch odds, generate picks
-gridiron serve   # Start dashboard
+gridiron serve   # Start dashboard (prints phone URLs)
+gridiron urls    # Print phone/iPad URLs without starting the server
 ```
 
 ## Development

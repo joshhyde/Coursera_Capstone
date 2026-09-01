@@ -178,27 +178,32 @@ fi
 bold "==> Initial odds sync"
 "$VENV_DIR/bin/gridiron" sync || echo "(sync skipped — will retry on schedule)"
 
-LAN_IP=""
-for iface in en0 en1; do
-  ip=$(ipconfig getifaddr "$iface" 2>/dev/null || true)
-  if [[ -n "$ip" ]]; then
-    LAN_IP="$ip"
-    break
-  fi
-done
-
 echo ""
 green "Setup complete!"
 echo ""
 bold "Open the dashboard:"
 echo "  On this Mac:     http://127.0.0.1:$PORT"
-if [[ -n "$LAN_IP" ]]; then
-  echo "  Other devices:   http://$LAN_IP:$PORT"
-  echo "                   (same Wi‑Fi network required)"
-else
-  echo "  Other devices:   http://<mac-mini-ip>:$PORT"
-  echo "                   Find IP: System Settings → Network"
+echo "  Phone / iPad:    same Wi-Fi, Safari address bar, type http:// (not https)"
+echo "                   Do not use http://0.0.0.0:$PORT or http://localhost:$PORT"
+LAN_IP=""
+for iface in en0 en1 en2 bridge0; do
+  ip=$(ipconfig getifaddr "$iface" 2>/dev/null || true)
+  if [[ -n "$ip" ]]; then
+    echo "                   http://$ip:$PORT  ($iface)"
+    if [[ -z "$LAN_IP" ]]; then
+      LAN_IP="$ip"
+    fi
+  fi
+done
+HOST_SHORT="$(hostname -s 2>/dev/null || hostname | cut -d. -f1)"
+if [[ -n "$HOST_SHORT" ]]; then
+  echo "                   http://${HOST_SHORT}.local:$PORT"
 fi
+if [[ -z "$LAN_IP" ]]; then
+  echo "                   Find IP: System Settings → Network, or ipconfig getifaddr en0"
+fi
+echo ""
+echo "  Print URLs later: .venv/bin/gridiron urls"
 echo ""
 bold "Services:"
 echo "  Diagnose issues: ./scripts/doctor.sh"
@@ -207,6 +212,10 @@ echo "  Sync logs:       tail -f /tmp/gridiron-edge-sync.log"
 echo "  Stop dashboard:  launchctl bootout gui/$(id -u)/com.gridiron-edge.serve"
 echo "  Start dashboard: launchctl kickstart gui/$(id -u)/com.gridiron-edge.serve"
 echo ""
-bold "Access from outside your home (optional):"
-echo "  Install Tailscale on Mac mini + phone: https://tailscale.com/download"
+bold "If the phone still cannot connect:"
+echo "  1. Phone and Mac on the same Wi-Fi (not guest / client isolation)"
+echo "  2. Type http:// not https:// — Safari will fail on https for this app"
+echo "  3. macOS Firewall: System Settings → Network → Firewall → allow Python"
+echo "  4. Cellular or another network: Tailscale, then http://<tailscale-ip>:$PORT"
+echo "     https://tailscale.com/download"
 echo ""
