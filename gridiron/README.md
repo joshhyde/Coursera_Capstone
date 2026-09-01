@@ -6,11 +6,13 @@ This is a recommendation engine. It does not place bets.
 
 ## Setup
 
+From the repository root:
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-cp .env.example .env   # set ODDS_API_KEY
+cp gridiron/.env.example .env   # set ODDS_API_KEY
 ```
 
 ## Usage
