@@ -1,5 +1,5 @@
-# capstone-project
+# Capstone Project
 
-Data Science Capstone Project.
+Data Science Capstone: segmenting and clustering Toronto neighborhoods.
 
-The Hard Rock Bet / NFL / NCAAF picks engine lives in [`gridiron/`](gridiron/README.md). Agent workflow is pstack under [`.cursor/plugins/pstack`](.cursor/plugins/pstack/README.md).
+Gridiron Edge (Hard Rock Bet NFL/CFB dashboard) does not belong in this homework repo. The standalone project tree is on branch [`cursor/gridiron-edge-standalone-ce57`](https://github.com/joshhyde/Coursera_Capstone/tree/cursor/gridiron-edge-standalone-ce57) until it is pushed to its own GitHub repository.
