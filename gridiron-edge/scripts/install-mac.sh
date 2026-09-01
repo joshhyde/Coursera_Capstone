@@ -7,7 +7,8 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 echo "==> Gridiron Edge Mac mini setup"
 
 if ! command -v python3 &>/dev/null; then
-  echo "Python 3 is required. Install via Homebrew: brew install python@3.12"
+  echo "Python 3 is required. On Mac mini run: ./scripts/setup-mac-mini.sh"
+  echo "Or install via Homebrew: brew install python@3.12"
   exit 1
 fi
 

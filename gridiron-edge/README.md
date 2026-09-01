@@ -14,23 +14,45 @@ Future: evolve to hybrid statistical model (Option C).
 
 ## Quick start (Mac mini)
 
+**One command** (installs Python 3.11+ if needed, starts dashboard on boot, enables LAN access):
+
 ```bash
-git clone https://github.com/joshhyde/gridiron-edge.git
-cd gridiron-edge
+git clone -b cursor/gridiron-edge-engine-6f8e \
+  https://github.com/joshhyde/Coursera_Capstone.git /tmp/capstone
+cd /tmp/capstone/gridiron-edge
+
+chmod +x scripts/setup-mac-mini.sh
+ODDSPAPI_API_KEY=your-key-here ./scripts/setup-mac-mini.sh
+```
+
+Requires **Python 3.11+**. macOS ships 3.9; the setup script auto-installs `python@3.12` via Homebrew if needed.
+
+Then open:
+- **On the Mac mini:** http://127.0.0.1:8787
+- **Phone/tablet (same Wi‑Fi):** http://192.168.x.x:8787 (the script prints your IP)
+
+### Manual setup
+
+```bash
 chmod +x scripts/install-mac.sh
 ./scripts/install-mac.sh
-
-# Add your API key
-nano .env
-
-# Generate picks
+nano .env   # add API key, set HOST=0.0.0.0
 source .venv/bin/activate
 gridiron sync
-
-# Launch dashboard
 gridiron serve
-# Open http://127.0.0.1:8787
 ```
+
+## Access from other devices
+
+| Where you are | How to connect |
+|---|---|
+| Same home Wi‑Fi | `http://<mac-mini-local-ip>:8787` |
+| Away from home | [Tailscale](https://tailscale.com/download) on Mac mini + phone (recommended) |
+| Public internet | Not configured by default (use Tailscale instead of port forwarding) |
+
+The setup script binds to `0.0.0.0` so any device on your local network can reach the dashboard. Find your Mac mini IP in **System Settings → Network**, or run `ipconfig getifaddr en0` in Terminal.
+
+**Tailscale (access anywhere):** Install on the Mac mini and your phone. Use the Mac mini's Tailscale IP (e.g. `http://100.x.x.x:8787`) from cellular or any network.
 
 ## Configuration
 

@@ -2,7 +2,6 @@
 # One-shot Mac mini installer: deps, .env, launchd (dashboard + scheduled sync), LAN access.
 #
 # Usage:
-#   curl -fsSL ... | bash   # or clone repo first (recommended)
 #   ./scripts/setup-mac-mini.sh
 #   ODDSPAPI_API_KEY=your-key ./scripts/setup-mac-mini.sh
 #
@@ -13,10 +12,46 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 VENV_DIR="$PROJECT_DIR/.venv"
 LAUNCH_AGENTS="$HOME/Library/LaunchAgents"
 PORT="${PORT:-8787}"
+MIN_PYTHON_MAJOR=3
+MIN_PYTHON_MINOR=11
 
 red() { printf '\033[0;31m%s\033[0m\n' "$*"; }
 green() { printf '\033[0;32m%s\033[0m\n' "$*"; }
 bold() { printf '\033[1m%s\033[0m\n' "$*"; }
+yellow() { printf '\033[0;33m%s\033[0m\n' "$*"; }
+
+python_version_ok() {
+  local py="$1"
+  "$py" -c "import sys; raise SystemExit(0 if sys.version_info >= ($MIN_PYTHON_MAJOR, $MIN_PYTHON_MINOR) else 1)" 2>/dev/null
+}
+
+find_python() {
+  local candidates=(
+    python3.12 python3.11
+    /opt/homebrew/bin/python3.12 /opt/homebrew/bin/python3.11
+    /usr/local/bin/python3.12 /usr/local/bin/python3.11
+    python3
+  )
+  local py
+  for py in "${candidates[@]}"; do
+    if command -v "$py" &>/dev/null && python_version_ok "$py"; then
+      echo "$py"
+      return 0
+    fi
+  done
+  return 1
+}
+
+install_python_via_brew() {
+  if ! command -v brew &>/dev/null; then
+    red "Homebrew not found."
+    echo "Install Homebrew first: https://brew.sh"
+    echo "Then run: brew install python@3.12"
+    exit 1
+  fi
+  yellow "Python 3.11+ not found. Installing python@3.12 via Homebrew..."
+  brew install python@3.12
+}
 
 if [[ "$(uname)" != "Darwin" ]]; then
   red "This script is for macOS (Mac mini). Run install-mac.sh on other platforms."
@@ -26,16 +61,31 @@ fi
 bold "==> Gridiron Edge Mac mini setup"
 echo "Project: $PROJECT_DIR"
 
-if ! command -v python3 &>/dev/null; then
-  red "Python 3 required. Install: brew install python@3.12"
-  exit 1
+PYTHON=""
+if ! PYTHON="$(find_python)"; then
+  install_python_via_brew
+  PYTHON="$(find_python)" || {
+    red "Still no Python 3.11+. Run: brew install python@3.12"
+    exit 1
+  }
 fi
+
+PY_VERSION="$("$PYTHON" -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")')"
+green "Using Python $PY_VERSION ($PYTHON)"
 
 cd "$PROJECT_DIR"
 
+# Remove broken venv from a prior failed install (e.g. system Python 3.9)
+if [[ -d "$VENV_DIR" ]]; then
+  if ! "$VENV_DIR/bin/python" -c "import sys; raise SystemExit(0 if sys.version_info >= ($MIN_PYTHON_MAJOR, $MIN_PYTHON_MINOR) else 1)" 2>/dev/null; then
+    yellow "Removing old .venv (wrong Python version)..."
+    rm -rf "$VENV_DIR"
+  fi
+fi
+
 if [[ ! -d "$VENV_DIR" ]]; then
   echo "Creating virtualenv..."
-  python3 -m venv "$VENV_DIR"
+  "$PYTHON" -m venv "$VENV_DIR"
 fi
 
 # shellcheck disable=SC1091
@@ -49,7 +99,6 @@ if [[ ! -f .env ]]; then
   cp .env.example .env
 fi
 
-# API key: env var, first arg, or keep existing .env value
 API_KEY="${ODDSPAPI_API_KEY:-${1:-}}"
 if [[ -n "$API_KEY" ]]; then
   if grep -q '^ODDSPAPI_API_KEY=' .env; then
@@ -64,7 +113,6 @@ elif grep -q 'your-key-here' .env 2>/dev/null; then
   exit 1
 fi
 
-# LAN access: bind all interfaces so phones/tablets on same Wi‑Fi can connect
 if grep -q '^HOST=' .env; then
   sed -i '' 's|^HOST=.*|HOST=0.0.0.0|' .env
 else
@@ -129,6 +177,5 @@ echo "  Stop dashboard:  launchctl bootout gui/$(id -u)/com.gridiron-edge.serve"
 echo "  Start dashboard: launchctl kickstart gui/$(id -u)/com.gridiron-edge.serve"
 echo ""
 bold "Access from outside your home (optional):"
-echo "  Install Tailscale on Mac mini + phone, then use the Tailscale IP:"
-echo "  https://tailscale.com/download"
+echo "  Install Tailscale on Mac mini + phone: https://tailscale.com/download"
 echo ""
