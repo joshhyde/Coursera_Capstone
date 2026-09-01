@@ -1,0 +1,5 @@
+ts	phase	decision	why	evidence	result
+2026-09-01T07:40:00Z	frame	Treat this as a standing program with a cheap first unit, not a full 50-agent orchestrate fan-out	One working CLI is the pilot. Orchestrate ceremony on a greenfield repo would stall landing.	.cursor/plugins/pstack/skills/poteto-mode/playbooks/orchestrate.md	open
+2026-09-01T07:41:00Z	data	Use OddsPapi v4, not The Odds API	The supplied key is a UUID that 401s on api.the-odds-api.com and 200s on api.oddspapi.io/v4. v5 rejects it.	live GET /v4/sports and /v4/odds-by-tournaments	confirmed
+2026-09-01T07:42:00Z	data	Fair line from Pinnacle then US consensus; target Hard Rock only	User asked for the best Hard Rock bets. Sharp no-vig is the standard +EV screen.	GET /v4/bookmakers slug hardrockbet and pinnacle	open
+2026-09-01T07:43:00Z	setup	Vendor pstack into .cursor/plugins/pstack and map roles to Task slugs that exist here	Cloud workers will not have /add-plugin. pstack defaults name models this environment does not expose.	.cursor/rules/pstack-models.mdc	written
