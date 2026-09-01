@@ -1,0 +1,17 @@
+{
+  "name": "Gridiron Edge",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "gridiron-dashboard",
+      "command": "cd gridiron-edge && source .venv/bin/activate && gridiron serve",
+      "description": "Gridiron Edge FastAPI dashboard (http://0.0.0.0:8787)"
+    }
+  ],
+  "ports": [
+    {
+      "name": "dashboard",
+      "port": 8787
+    }
+  ]
+}
