@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
-from gridiron_edge.api_client import OddsPapiClient
+from gridiron_edge.api_client import ApiBudgetExceeded, OddsPapiClient, RateLimitExceeded
 from gridiron_edge.backtest import backtest_result_to_dict, run_backtest
 from gridiron_edge.config import Settings, get_settings
 from gridiron_edge.storage import Storage
