@@ -135,8 +135,14 @@ install_plist() {
     -e "s|__GRIDIRON_ROOT__|$PROJECT_DIR|g" \
     -e "s|__GRIDIRON_VENV__|$VENV_DIR|g" \
     "$src" > "$dest"
+  plutil -lint "$dest" >/dev/null
   launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
-  launchctl bootstrap "gui/$(id -u)" "$dest"
+  sleep 1
+  if ! launchctl bootstrap "gui/$(id -u)" "$dest" 2>/dev/null; then
+    yellow "launchctl bootstrap failed for $label — trying load..."
+    launchctl unload "$dest" 2>/dev/null || true
+    launchctl load "$dest" 2>/dev/null || yellow "Could not auto-start $label (run ./scripts/run-serve.sh manually)"
+  fi
   launchctl enable "gui/$(id -u)/$label" 2>/dev/null || true
   launchctl kickstart -k "gui/$(id -u)/$label" 2>/dev/null || true
 }

@@ -33,6 +33,8 @@ def cmd_sync() -> int:
 
 def cmd_serve() -> int:
     settings = get_settings()
+    print(f"Starting dashboard at http://{settings.host}:{settings.port}")
+    print(f"Local:  http://127.0.0.1:{settings.port}")
     app = create_app(settings)
     uvicorn.run(app, host=settings.host, port=settings.port, log_level="info")
     return 0

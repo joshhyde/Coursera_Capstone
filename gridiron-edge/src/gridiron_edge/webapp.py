@@ -41,9 +41,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         stats = storage.pick_stats()
         api_calls_today = storage.api_calls_today()
         return templates.TemplateResponse(
-            "dashboard.html",
-            {
-                "request": request,
+            request=request,
+            name="dashboard.html",
+            context={
                 "picks": picks,
                 "stats": stats,
                 "api_calls_today": api_calls_today,
